@@ -1,0 +1,207 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #ebe8e8;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+.body-wrapper{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.flex{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flex2{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+p{
+  margin: 0;
+}
+
+/* navbar */
+
+.navbar-wrapper{
+  padding: 2vw;
+  width: 96vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.link{
+  width: 4vw;
+  font-size: x-large;
+  text-decoration: none;
+  color: #4345E7;
+}
+
+/* landingpage */
+
+.landingpage-img-wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+#landingpage-img{
+  height: 50vh;
+}
+#landingpage-heading{
+  color: #FF786B;
+  font-size: 15vh;
+  margin: 0;
+}
+#landingpage-sub-heading{
+  color: #110468;
+  font-size: 3vh;
+}
+
+/* login */
+
+.heading{
+  color: #FF786B;
+  font-size: 5vh;
+  margin: 0;
+  
+}
+.loginpage{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2vh;
+  width: 25vw;
+  
+}
+input{
+  height: 5vh;
+  width: 20vw;
+  border-radius: 2vh;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  padding: 1%;
+  padding-left: 1vw;
+  outline: none; 
+  transition: border-color 0.3s ease;
+}
+input:focus {
+  border-bottom: 2px solid #000; 
+}
+.login-submit{
+  height: 5vh;
+}
+.login-form-wrapper{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2vh;
+  width: 25vw;
+  padding: 5vh;
+  margin-top: 10vh;
+  
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+}
+.login-extras-wrapper{
+  width: 20vw;
+  display: flex;
+  font-size: small;
+  justify-content: space-between;
+}
+
+/* signuppage */
+
+.signup-form-wrapper{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2vh;
+  width: 25vw;
+  padding: 5vh;
+  margin-top: 10vh;
+  
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* forgetpasspage */
+
+.forgetpass{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2vh;
+  width: 25vw;
+  padding: 5vh;
+  margin-top: 10vh;
+  
+  box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* dashboard */
+
+.d-wrapper{
+  padding: 0 5vh 0 5vh;
+}
+.ques-wrapper{
+  margin-top: 2vh;
+  padding: 2vh;
+  border: 2px solid #4345E7;
+  display: flex;
+  justify-content: center;
+  border-radius: 2vh;
+}
+.ques{
+  background-color: #E3EAFD;
+  height: 4vh;
+  padding: 2vh 4vh 2vh 4vh;
+  width: 95%;
+  border-radius: 2vh;
+}
+.ques-tag{
+  background-color: #4345E7;
+  height: 4vh;
+  width: 5vw;
+  color: white;
+  border-radius: 1vh;
+  text-align: center;
+}
+
+/* logout */
+
+#logout-btn{
+  border: none;
+  height: 4vh;
+  border-radius: 1vh;
+  color: #b7b6b6;
+}
+
+/* profile */
+
+/* h5{
+  margin: 5px;
+} */
+
+/* fetch */
+
+.search-results{
+  width: 25vw;
+  height: 20vh;
+  background-color: white;
+  border-radius: 2vh;
+}
