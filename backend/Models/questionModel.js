@@ -10,6 +10,10 @@ const questionSchema = new mongoose.Schema(
             type:String,
             required:true
         },
+        headline:{
+            type:String,
+            required:true
+        },
         statement:{
             type:String,
             required:true

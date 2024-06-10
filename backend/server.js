@@ -1,15 +1,15 @@
 
 import dotenv from 'dotenv'
 import path from 'path'
-import { fileURLToPath } from 'url'
-import { dirname } from 'path'
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({
-    path:path.resolve(__dirname,'.env')
+    path:path.resolve(__dirname , '.env')
 })
 
-import express, { urlencoded } from 'express'
+import express from 'express'
 const app = express()
 
 import cors from 'cors'
@@ -17,14 +17,16 @@ app.use(cors({
     origin:process.env.CORS_ORIGIN
 }))
 
-import cookieParser from 'cookie-parser'
-app.use(cookieParser());
+
 
 app.use(express.json({limit:"16kb"}));
 app.use(express.urlencoded({extended:true , limit:"16kb"}));
 
-import {authMiddleware, generateAccessTokenUtils , generateRefreshTokenUtils ,otpGeneratorAndMailer , mailUtil } from './utils.js'
+import {authMiddleware,authMiddleware2, generateAccessTokenUtils , generateRefreshTokenUtils ,otpGeneratorAndMailer , mailUtil } from './utils.js'
 import  {User}  from "./Models/userModel.js";
+
+//security enhancement:do a check if the user._id from the authMiddleware and params.id are same 
+
 //working fine
 app.post('/SignUp' , async (req, res)=>{
     const username = req.body.username
@@ -83,8 +85,8 @@ app.post('/SignUp' , async (req, res)=>{
 
 
 import { OTPVerify } from './Models/OTPVerifcation.js'
-
-app.get('/LogIn/:id/Profile/AccVerify' , authMiddleware ,async(req, res)=>{
+//working fine
+app.get('/LogIn/:id/Profile/AccVerify' , authMiddleware2 ,async(req, res)=>{
     try{
         let user = req.user
         user = await User.findById(user._id)
@@ -94,7 +96,7 @@ app.get('/LogIn/:id/Profile/AccVerify' , authMiddleware ,async(req, res)=>{
                 "message":"User is Already Verified"
             })
         }
-        
+        const clearExpiredOTP = await OTPVerify.deleteMany({expiresIn:{$lte:Date.now()}})
         const otp =await otpGeneratorAndMailer(user.email)
         if(otp === false){
             throw new Error
@@ -107,9 +109,8 @@ app.get('/LogIn/:id/Profile/AccVerify' , authMiddleware ,async(req, res)=>{
                 "message":"Too Early to make another OTP request! You must wait for 15minutes between making two successive OTP requests"
             })
         }
-        
         const NewOTP=await OTPVerify.create({userId:user._id , otp:otp , expiresIn:(Date.now()+15*60*1000)})
-        mailUtil(userEmail , `Your OTP for ZCoder account id ${otp}`)
+        mailUtil(user.email , `Your OTP for ZCoder account id ${otp}`)
         return res.status(200).json({
             "error":false,
             "message":"OTP sent to your Registered Email Id. Do not make furthur OTP request for 15minutes",
@@ -124,7 +125,8 @@ app.get('/LogIn/:id/Profile/AccVerify' , authMiddleware ,async(req, res)=>{
 })
 
 
-app.post('/LogIn/:id/Profile/AccVerify' ,  authMiddleware, async (req, res)=>{
+//working fine
+app.post('/LogIn/:id/Profile/AccVerify' ,  authMiddleware2, async (req, res)=>{
     try{
         let user = req.user
         const otp = req.body.otp;
@@ -238,7 +240,7 @@ app.post('/LogIn'  , async (req, res)=>{
 })
 
 
-
+//working fine
 app.post('/LogIn/ForgotPassword' , async (req, res)=>{
     try{
         const username = req.body.username;
@@ -249,7 +251,7 @@ app.post('/LogIn/ForgotPassword' , async (req, res)=>{
                 "message":"username does not exist"
             })
         }
-        
+        const clearExpiredOTP = await OTPVerify.deleteMany({expiresIn:{$lte:Date.now()}})
         if(!user.verfied){
             return res.status(401).json({
                 "error":true,
@@ -284,7 +286,7 @@ app.post('/LogIn/ForgotPassword' , async (req, res)=>{
 })
 
 
-
+//working fine
 app.post('/LogIn/ForgotPassword/ResetPassword', async (req, res)=>{
     try{
         const username = req.headers['username']
@@ -412,7 +414,7 @@ app.get('/LogIn/:id/Profile', authMiddleware , async (req, res)=>{
 })
 
 
-
+//working fine
 app.put('/LogIn/:id/Profile/AccEdit' , authMiddleware , async (req, res)=>{
     try{
         const techStack = req.body.techStack
@@ -463,11 +465,10 @@ import { Question } from './Models/questionModel.js'
 import { Bookmark } from './Models/bookmarkModel.js'
 import { Comment } from './Models/commentModel.js'
 import { Upvote } from './Models/upvoteModel.js'
-
+//working fine
 app.get('/LogIn/:id' ,authMiddleware, async (req, res)=>{
-    //return the top ten question-blog from the databases based on uploaded time
     try{
-        const feed = await (await Question.find({visibility:true}).sort({createdAt : 1}).exec())
+        const feed = await Question.find({visibility:true}).sort({createdAt : 1}).exec()
         if(!feed){
             throw new Error("Server Error Occured")
         }
@@ -488,7 +489,7 @@ app.get('/LogIn/:id' ,authMiddleware, async (req, res)=>{
 
 
 
-
+//working fine
 app.post('/LogIn/:id/:qid/Post-Comment',authMiddleware , async (req, res)=>{
     try{
         const userid = req.params.id
@@ -526,14 +527,15 @@ app.post('/LogIn/:id/:qid/Post-Comment',authMiddleware , async (req, res)=>{
 
 
 
-
+//working fine
 app.delete('/LogIn/:id/:qid/Del-Comment/:cid'  , authMiddleware , async (req, res)=>{
     try{
         const userid = req.params.id
         const qid = req.params.qid
         const cid = req.params.cid
         const user = req.user;
-        const commentToBeDel = await Comment.findOneAndDelete({userid:userid , questionid:qid , _id:cid})
+        const commentToBeDel = await Comment.deleteOne({userid:userid , questionid:qid , _id:cid})
+        console.log(commentToBeDel)
         if(!commentToBeDel){
             throw new Error('Comment could not be deleted')
         }
@@ -550,8 +552,52 @@ app.delete('/LogIn/:id/:qid/Del-Comment/:cid'  , authMiddleware , async (req, re
 })
 
 
+//working fine
+app.post('/LogIn/:id/:qid/Comment/:cid/Comment-UpVote' , authMiddleware , async(req, res)=>{
+    try{
+        const user = req.user
+        const userid=user._id
+        const cid=req.params.cid
+        const UpVoteCheck = await Upvote.findOne({userid:userid , entityid:cid})
+        if(UpVoteCheck!== null){
+            const DownVote = await Upvote.findByIdAndDelete(UpVoteCheck._id)
+            if(!DownVote){
+                throw new Error(500 , "UpVote not removed due to technical error")
+            }
+            const comment = await Comment.findById(cid)
+            const currentUpvotes = comment.upvote - 1;
+            comment.upvote = currentUpvotes
+            const newUpvoteCount = await comment.save({validateBeforeSave:false})
+            return res.status(200).json({
+                "error":false,
+                "message":"UpVote Removed Succeesfully",
+                "data":newUpvoteCount.upvote
+            })
+        }
+        const newUpVote= await Upvote.create({userid:userid , entityid:cid})
+        if(!newUpVote){
+            throw new Error(500 , "Comment UpVote unsuccessfull")
+        }
+        const comment = await Comment.findById(cid)
+        const currentUpvotes = comment.upvote +1;
+        comment.upvote = currentUpvotes
+        const newUpvoteCount = await comment.save({validateBeforeSave:false})
+        return res.status(200).json({
+            "error":false,
+            "message":"Comment Upvoted Successfully",
+            "data":newUpvoteCount.upvote
+        })
+    }catch(error){
+        return res.status(500).json({
+            "error":true,
+            "message":"Server Error Occures",
+            "data":null
+        })
+    }
+})
 
 
+//working fine
 app.get('/LogIn/:id/:qid/Comment' , authMiddleware , async (req, res)=>{
     try{
         const qid= req.params.qid
@@ -576,7 +622,7 @@ app.get('/LogIn/:id/:qid/Comment' , authMiddleware , async (req, res)=>{
 
 
 
-
+//working fine
 app.post('/LogIn/:id/PublishQuestion' , authMiddleware , async(req, res)=>{
     try{
         const headline = req.body.headline
@@ -585,7 +631,7 @@ app.post('/LogIn/:id/PublishQuestion' , authMiddleware , async(req, res)=>{
         const visibility = req.body.visibility
         const userid = req.params.id
         
-        if(!headline || !statement || !visibility || !code){
+        if(!headline || !statement  || !code){
             return res.status(400).json({
                 "error":true,
                 "message":"Mandatory Fields not filled",
@@ -602,7 +648,7 @@ app.post('/LogIn/:id/PublishQuestion' , authMiddleware , async(req, res)=>{
             })
         }
         
-        const newQuestion = await Question.create({userid:userid , name:user.username , statement:statement , code:code  , visibility:visibility , upvote:0})
+        const newQuestion = await Question.create({userid:userid, headline:headline , name:user.username , statement:statement , code:code  , visibility:visibility , upvote:0})
         if(!newQuestion){
             throw new Error("Question could not be posted")
         }
@@ -622,8 +668,8 @@ app.post('/LogIn/:id/PublishQuestion' , authMiddleware , async(req, res)=>{
 })
 
 
-
-app.post('/LogIn/:id/:qid/UpVote' , authMiddleware , async(req,res)=>{
+//working fine
+app.post('/LogIn/:id/:qid/Question-UpVote' , authMiddleware , async(req,res)=>{
     try{
         const userid=req.user._id
         const questionid=req.params.qid
@@ -640,7 +686,7 @@ app.post('/LogIn/:id/:qid/UpVote' , authMiddleware , async(req,res)=>{
             return res.status(200).json({
                 "error":false,
                 "message":"UpVote Removed Successfully",
-                "data":newUpvoteCount
+                "data":newUpvoteCount.upvote
             })
         }
         const newUpVote= await Upvote.create({userid:userid , entityid:questionid})
@@ -654,7 +700,7 @@ app.post('/LogIn/:id/:qid/UpVote' , authMiddleware , async(req,res)=>{
         return res.status(200).json({
             "error":false,
             "message":"Question Upvoted Successfully",
-            "data":newUpVote
+            "data":newUpvoteCount.upvote
         })
     }catch(error){
         return res.status(500).json({
@@ -666,12 +712,19 @@ app.post('/LogIn/:id/:qid/UpVote' , authMiddleware , async(req,res)=>{
 })
 
 
+app.delete('/LogIn/:id/:qid/Del-Question' , authMiddleware, (req, res)=>{
+    //use try catch block
+    //get the user id and qid from url
+    //refer to Del-Comment for more..(line 530)
+})
 
+
+//working fine
 app.post('/LogIn/:id/:qid/Bookmark' , authMiddleware , async(req, res)=>{
     try{
         const userid=req.user._id
         const questionid=req.params.qid
-        const BookmarkCheck = Bookmark.findOne({userid:userid , questionid:questionid})
+        const BookmarkCheck = await Bookmark.findOne({userid:userid , questionid:questionid})
         if(BookmarkCheck!== null){
             const UnMark = await Bookmark.findByIdAndDelete(BookmarkCheck._id)
             if(!UnMark){
@@ -696,51 +749,6 @@ app.post('/LogIn/:id/:qid/Bookmark' , authMiddleware , async(req, res)=>{
         return res.status(500).json({
             "error":true,
             "message":"server Error occured",
-            "data":null
-        })
-    }
-})
-
-
-
-app.post('/LogIn/:id/:qid/Comment/:cid/UpVote' , authMiddleware , async(req, res)=>{
-    try{
-        const user = req.user
-        const userid=user._id
-        const cid=req.params.cid
-        const UpVoteCheck = await Upvote.findOne({userid:userid , entityid:cid})
-        if(UpVoteCheck!== null){
-            const DownVote = await Upvote.findByIdAndDelete(UpVoteCheck._id)
-            if(!DownVote){
-                throw new Error(500 , "UpVote not removed due to technical error")
-            }
-            const comment = await Comment.findById(cid)
-            const currentUpvotes = comment.upvote - 1;
-            comment.upvote = currentUpvotes
-            const newUpvoteCount = await comment.save({validateBeforeSave:false})
-            return res.status(200).json({
-                "error":false,
-                "message":"UpVote Removed Succeesfully",
-                "data":newUpvoteCount
-            })
-        }
-        const newUpVote= await Upvote.create({userid:userid , entityid:questionid})
-        if(!newUpVote){
-            throw new Error(500 , "Comment UpVote unsuccessfull")
-        }
-        const comment = await Comment.findById(cid)
-        const currentUpvotes = comment.upvote +1;
-        comment.upvote = currentUpvotes
-        const newUpvoteCount = await comment.save({validateBeforeSave:false})
-        return res.status(200).json({
-            "error":false,
-            "message":"Comment Upvoted Successfully",
-            "data":newUpvoteCount
-        })
-    }catch(error){
-        return res.status(500).json({
-            "error":true,
-            "message":"Server Error Occures",
             "data":null
         })
     }
@@ -815,8 +823,6 @@ app.post('/CodeEditor/:lang' , async(req , res)=>{
 
 
 import mongoose from 'mongoose'
-import { Calender } from './Models/calenderModel.js'
-import { error } from 'console'
 const mongooseConnect = async ()=>{
     try{
         const connectionResponse = await mongoose.connect(process.env.DB);
