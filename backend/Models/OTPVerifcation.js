@@ -6,7 +6,7 @@ const OTPVerifySchema=new mongoose.Schema({
         required:true
     },
     otp:{
-        type:Number,
+        type:String,
         required:true
     },
     expiresIn:{
@@ -17,14 +17,19 @@ const OTPVerifySchema=new mongoose.Schema({
     timestamps:true
 })
 
-OTPVerifySchema.pre("save" , async (next)=>{
+OTPVerifySchema.pre("save" , async function(next){
     if(!(this.isModified("otp")))
         return next()
-    this.otp=await  bcrypt.hash(this.otp , 10);
+    this.otp = await bcrypt.hash(this.otp, 10)
     next()
 })
-OTPVerifySchema.methods.isOTPCorrect = async (otp)=>{
-    return await bcrypt.compare(otp , this.otp)
+OTPVerifySchema.methods.isOTPCorrect = async function(otp){
+    try{
+        return await bcrypt.compare(otp, this.otp)
+       }catch(error){
+        console.log('Error in Comparing using bcrypt')
+        return false
+       }
 }
 
 export const OTPVerify = mongoose.model('OTPVerify' , OTPVerifySchema)

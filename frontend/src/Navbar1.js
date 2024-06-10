@@ -5,6 +5,7 @@ function Navbar1(){
     <div className='navbar-wrapper' style={{justifyContent:'space-around'}}>
         <Link className='link' to='/LogIn'>LogIn</Link>
         <Link className='link' to='/SignUp'>SignUp</Link>
+        <Link className='link' to='/CodeEditor'>CodeEditor</Link>
     </div>
     </>)
 }
