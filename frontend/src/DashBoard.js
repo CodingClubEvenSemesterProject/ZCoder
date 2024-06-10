@@ -12,7 +12,7 @@ function DashBoard() {
             <div className="ques-wrapper">
                 <div className="flex ques" style={{ justifyContent: 'space-between' }}>
                     <p className="ques-tag">23A</p>
-                    <p>Lorem wef ret uyuui oirf pod fuvk guk lob booooorr sjo...</p>
+                    <p className="ques">Lorem wef ret uyuui oirf pod fuvk guk lob booooorr sjo...</p>
                     <FontAwesomeIcon icon={faBookmark} style={{ color: '#90FF69', fontSize: '4vh' }} />
                 </div>
             </div>

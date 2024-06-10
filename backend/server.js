@@ -1,6 +1,12 @@
+
 import dotenv from 'dotenv'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 dotenv.config({
-    path:'./.env'
+    path:path.resolve(__dirname,'.env')
 })
 
 import express, { urlencoded } from 'express'
@@ -174,8 +180,8 @@ app.post('/LogIn/:id/Profile/AccVerify' ,  authMiddleware, async (req, res)=>{
 
 
 
-import cookieParser from 'cookie-parser'
-app.use(cookieParser());
+// import cookieParser from 'cookie-parser'
+// app.use(cookieParser());
 //working fine
 app.post('/LogIn'  , async (req, res)=>{
     const username=req.body.username;
@@ -380,7 +386,7 @@ app.get('/LogIn/:id/Profile', authMiddleware , async (req, res)=>{
             let i=0;
             bookmark.forEach(async (element) => {
                 bookmarkQuestion[i]=await Question.findById(element.questionid)
-                i=i+1;
+                i=i+1;  
             });
         }
         const publish = await Question.find({userid:userid}).sort({createdAt:1}).exec()
@@ -815,8 +821,9 @@ const mongooseConnect = async ()=>{
     try{
         const connectionResponse = await mongoose.connect(process.env.DB);
         console.log("Mongo Connected Succesfully")
+        console.log(process.env.DB)
     }catch(error){
-        console.log("Error Ocurred in connecting to MongoDB")
+        console.error("Error Occurred in connecting to MongoDB:", error.message);
         throw new Error(error)
     }
 }

@@ -44,25 +44,29 @@ p{
 }
 .link{
   width: 4vw;
-  font-size: x-large;
+  font-size: large;
   text-decoration: none;
   color: #4345E7;
 }
 
 /* landingpage */
 
+.landingPage-wrapper{
+  height: 100vh;
+  background-image: url('https://c4.wallpaperflare.com/wallpaper/42/94/569/programming-php-code-developer-wallpaper-thumb.jpg');
+  background-size: cover;
+}
 .landingpage-img-wrapper{
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   flex-direction: column;
-}
-#landingpage-img{
-  height: 50vh;
+  margin-left: 3vw;
+  margin-top: 3vh;
 }
 #landingpage-heading{
   color: #FF786B;
-  font-size: 15vh;
+  font-size: 10vh;
   margin: 0;
 }
 #landingpage-sub-heading{
@@ -133,7 +137,7 @@ input:focus {
   gap: 2vh;
   width: 25vw;
   padding: 5vh;
-  margin-top: 10vh;
+  margin-top: 5vh;
   
   box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
 }
@@ -204,4 +208,19 @@ input:focus {
   height: 20vh;
   background-color: white;
   border-radius: 2vh;
+}
+
+/* codeeditor */
+
+.CodeEditor-wrapper{
+  padding: 2vh;
+}
+
+.lang-selector-wrapper{
+  width: 35vw;
+}
+
+.lang-btn{
+  width: 5vw;
+  height: 3vh;
 }

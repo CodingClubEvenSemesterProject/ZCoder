@@ -1,6 +1,6 @@
 import ChatRoom from "./ChatRoomPage";
 import Calender from "./Calender";
-import CodeEditor from "./CodeEditor";
+import CodeEditor from "./CodeEditorPage";
 import ForgotPassword from "./ForgotPasswordPage";
 import LandingPage from "./LandingPage";
 import LogIn from "./LogInPage";
